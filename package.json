@@ -1,6 +1,6 @@
 {
   "name": "mg_web_js",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "mg_web JavaScript Interface",
   "type": "module",
   "main": "/src/mg_web_js.mjs",
