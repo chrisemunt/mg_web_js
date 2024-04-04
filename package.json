@@ -1,0 +1,26 @@
+{
+  "name": "mg_web_js",
+  "version": "1.0.0",
+  "description": "mg_web JavaScript Interface",
+  "type": "module",
+  "main": "/src/mg_web_js.mjs",
+  "exports": {
+    ".": "./src/mg_web_js.mjs"
+  },
+  "engines" : {
+    "node" : ">=20.0.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chrisemunt/mg_web_js.git"
+  },
+  "author": "Chris Munt, MGateway Ltd",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/chrisemunt/mg_web_js/issues"
+  },
+  "homepage": "https://github.com/chrisemunt/mg_web_js"
+}
