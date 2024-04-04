@@ -35,7 +35,7 @@ const cpus = os.cpus().length;
 
 const MGWEB_VERSION_MAJOR = 1;
 const MGWEB_VERSION_MINOR = 0;
-const MGWEB_VERSION_BUILD = 0;
+const MGWEB_VERSION_BUILD = 1;
 
 function mg_web(options) {
 
