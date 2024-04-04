@@ -26,7 +26,7 @@ Chris Munt <cmunt@mgateway.com>
 
 ## Starting the server
 
-An example, showing how to start the server to listen on a particular TCP port is shown in the /example/server.mjs module.  Using this module the server is started as follows: 
+An example, showing how to start the server to listen on a particular TCP port is given in the **/example/server.mjs** module.  Using this module the server is started as follows: 
 
      node server.mjs
 
