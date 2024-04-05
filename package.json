@@ -1,7 +1,7 @@
 {
   "name": "mg_web_js",
-  "version": "1.0.1",
-  "description": "mg_web JavaScript Interface",
+  "version": "1.0.1a",
+  "description": "A JavaScript server for mg_web.",
   "type": "module",
   "main": "/src/mg_web_js.mjs",
   "exports": {

@@ -1,11 +1,11 @@
-# mg_web_js
+# mg\_web\_js
 
-A JavaScript server for mg_web.
+A JavaScript server for **mg\_web**.
 
 Chris Munt <cmunt@mgateway.com>  
-4 April 2024, MGateway Ltd [http://www.mgateway.com](http://www.mgateway.com)
+5 April 2024, MGateway Ltd [http://www.mgateway.com](http://www.mgateway.com)
 
-* Current Release: Version: 1.0; Revision 1.
+* Current Release: Version: 1.0; Revision 1a.
 * [Release Notes](#relnotes) can be found at the end of this document.
 
 ## Overview
@@ -30,6 +30,43 @@ An example, showing how to start the server to listen on a particular TCP port i
 
      node server.mjs
 
+## mg_web configuration
+
+This section will describe how to configure **mg\_web** to communicate with the JavaScript server (**mg\_web\_js**) as opposed to the DB Server based **mgsi** superserver.
+
+For JavaScript, the server type should be defined as **Node.js** in the **mg\_web** configuration file (**mgweb.conf**).  For example:
+
+     <server NodeJS>
+       type Node.JS
+       host 127.0.0.1
+       tcp_port 7777
+     </server>
+
+### Define a mapping to your JavaScript application
+
+In the package there is an example application module named **application.mjs**.  This can be defined in the **mg\_web** configuration as follows:
+
+     <location /mgweb/js>
+       function ./application.mjs
+       servers NodeJS
+     </location>
+
+Web requests with a path of **/mgweb/js** will be routed to **application.mjs** for processing.
+
+### Define a mapping to a JavaScript websocket application
+
+In the package there is an example websocket module named **websocket.mjs**.  This can be defined in the **mg\_web** configuration as follows:
+
+     <location /mgweb/js>
+       function ./application.mjs
+       websocket websocket.mgw ./websocket.mjs
+       servers NodeJS
+     </location>
+  
+This websocket application can be invoked from the client using:
+
+     ws = new WebSocket(((window.location.protocol == "https:") ? "wss:" : "ws:") + "//" + window.location.host + "/mgweb/js/websocket.mgw");
+
 ## License
 
 Copyright (c) 2019-2024 MGateway Ltd,
@@ -51,3 +88,7 @@ Unless required by applicable law or agreed to in writing, software distributed 
 ### v1.0.1 (4 April 2024)
 
 * Initial Release
+
+### v1.0.1a (5 April 2024)
+
+* Add some configuration notes to this README file.
