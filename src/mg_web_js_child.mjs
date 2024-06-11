@@ -85,13 +85,13 @@ function get_size(buffer, offset) {
 }
 
 class webserver {
-
   constructor(options) {
     options = options || {};
     let bufferSize = options.bufferSize || MGWEB_BUFFER_SIZE;
     this.buffer = new Uint8Array(bufferSize);
     this.stream_mode = options.stream_mode || 0;
     this.conn = false;
+    this.sse = false;
   }
 
   stream(sys, binary, options) {
@@ -101,16 +101,39 @@ class webserver {
 
   write(data) {
     if (this.conn) {
-      let offset = 0;
-      offset = set_size(this.buffer, offset, data.length);
-      this.conn.write(this.buffer.slice(0, offset), 'binary');
-      this.conn.write(data);
+      if (this.stream_mode === 1) {
+        let offset = 0;
+        offset = set_size(this.buffer, offset, data.length);
+        this.conn.write(this.buffer.slice(0, offset), 'binary');
+        this.conn.write(data);
+      }
+      else {
+        this.conn.write(data);
+      }
     }
   }
+
+  initsse(sys, options) {
+    let offset = 0
+    let res = "HTTP/1.1 200 OK\r\nContent-Type: text/event-stream\r\nCache-Control: no-cache\r\nConnection: keep-alive\r\n\r\n"
+    let no = sys.get("no");
+    offset = block_add_size(this.buffer, offset, res.length + 5, 0, 0);
+    offset = block_add_size(this.buffer, offset, no, 0, 0);
+    for (let i = 0; i < res.length; i++) {
+      this.buffer[offset++] = res.charCodeAt(i);
+    }
+    this.conn.write(this.buffer.slice(0, offset), 'binary');
+    return "";
+  }
+
+  close() {
+    this.conn.end();
+    process.exit();
+  }
+
 }
 
 class websocket {
-
   constructor(options) {
     options = options || {};
     this.conn = false;
@@ -137,7 +160,8 @@ class websocket {
   }
 
   close() {
-    // TODO: close the websocket
+    this.conn.end();
+    process.exit();
   }
 }
 
@@ -182,6 +206,7 @@ process.on('message', (dbx, conn) => {
   conn.write(wsrv.buffer.slice(0, offset));
 
   conn.on('data', async (data) => {
+    wsrv.sse = false;
     let offset = 0;
     let request_no = 0;
     let cgi = new Map();
@@ -267,6 +292,11 @@ process.on('message', (dbx, conn) => {
         else if (d[0] === "wsfunction") {
           wsfun = d[1];
         }
+        else if (d[0] === "sse") {
+          if (d[1] === '1') {
+            wsrv.sse = true;
+          }
+        }
         sys.set(d[0], d[1]);
       }
       offset += len;
@@ -314,10 +344,15 @@ process.on('message', (dbx, conn) => {
     else {
       // notify mg_web of data framing protocol in use for response
       offset = 0;
-      offset = add_head(wsrv.buffer, offset, 0, 0);
-      offset = add_head(wsrv.buffer, offset, request_no, 1);
-      conn.write(wsrv.buffer.slice(0, offset), 'binary');
-
+      if (wsrv.sse === true) {
+        wsrv.stream_mode = 0;
+      }
+      else {
+        wsrv.stream_mode = 1;
+        offset = add_head(wsrv.buffer, offset, 0, 0);
+        offset = add_head(wsrv.buffer, offset, request_no, 1);
+        conn.write(wsrv.buffer.slice(0, offset), 'binary');
+      }
       // ******* call-out to application - START *******
       // CGI variables in 'cgi' array; system variables in 'sys' array; request payload in 'content'
       // generate a resonse in variable 'res'
@@ -359,11 +394,13 @@ process.on('message', (dbx, conn) => {
       // ******* call-out to application - END *******
 
       offset = 0;
-      if (res.length > 0) {
-        offset = block_add_chunk(wsrv.buffer, offset, res, res.length);
+      if (wsrv.sse === false) {
+        if (res.length > 0) {
+          offset = block_add_chunk(wsrv.buffer, offset, res, res.length);
+        }
+        offset = set_term(wsrv.buffer, offset);
+        conn.write(wsrv.buffer.slice(0, offset), 'binary');
       }
-      offset = set_term(wsrv.buffer, offset);
-      conn.write(wsrv.buffer.slice(0, offset), 'binary');
     }
   });
 

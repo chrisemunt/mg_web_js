@@ -34,8 +34,8 @@ import child_process from 'node:child_process'
 const cpus = os.cpus().length;
 
 const MGWEB_VERSION_MAJOR = 1;
-const MGWEB_VERSION_MINOR = 0;
-const MGWEB_VERSION_BUILD = 1;
+const MGWEB_VERSION_MINOR = 1;
+const MGWEB_VERSION_BUILD = 2;
 
 function mg_web(options) {
 
