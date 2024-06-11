@@ -1,6 +1,6 @@
 {
   "name": "mg_web_js",
-  "version": "1.0.1a",
+  "version": "1.1.2",
   "description": "A JavaScript server for mg_web.",
   "type": "module",
   "main": "/src/mg_web_js.mjs",
