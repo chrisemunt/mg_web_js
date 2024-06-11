@@ -40,6 +40,21 @@ let handler = function(web_server, cgi, content, sys) {
 
   //let res = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nConnection: close\r\n\r\nIt Works!\r\n";
 
+  if (web_server.sse === true) {
+    let res = web_server.initsse(sys, "");
+    let n = 0;
+    let d = 0;
+    var intervalId = setInterval(function () {
+      n++;
+      d = new Date();
+      web_server.write('data: SSE data line ' + n + ' Date: ' + d.toLocaleString() + '\r\n\r\n');
+      if (n > 9) {
+        clearInterval(intervalId);
+        web_server.close();
+      }
+    }, 5000);
+    return res;
+  }
   let res = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nConnection: close\r\n\r\n";
   cgi.forEach((value, name) => {
     res = res + "CGI variable " + name + " : " + value + "\r\n";
