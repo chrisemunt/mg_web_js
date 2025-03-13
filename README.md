@@ -3,9 +3,9 @@
 A JavaScript server for **mg\_web**.
 
 Chris Munt <cmunt@mgateway.com>  
-10 June 2024, MGateway Ltd [http://www.mgateway.com](http://www.mgateway.com)
+13 March 2025, MGateway Ltd [http://www.mgateway.com](http://www.mgateway.com)
 
-* Current Release: Version: 1.1; Revision 2.
+* Current Release: Version: 1.1; Revision 3.
 * [Release Notes](#relnotes) can be found at the end of this document.
 
 Contents
@@ -230,6 +230,54 @@ Example:
 
 The above simple example sends a line of data to the client every 5 seconds and closes the channel after the tenth line has been sent.
 
+### Responding to the client abort event
+
+When a client disconnects from an SSE channel, **mg\_web** will send a termination message to the server. When received, the server can invoke any server-side clean-up code before terminating.
+
+Example:
+
+    let handler = function(web_server, cgi, content, system) {
+
+      // Define a class to represent a SSE channel
+      //
+      class sse_client {
+        // Mandatory 'closed' method to signify that client has disconnected from the SSE channel 
+        closed(web_server, data) {
+          // Opportunity to clean-up server side of SSE channel before closing
+          //console.log('Client aborted SSE channel');
+          web_server.close();
+        }
+      }
+
+      if (web_server.sse === true) {
+        //
+        // Initialise SSE server
+        //
+        let result = web_server.initsse(sys, "");
+        let n = 0;
+        let d = 0;
+        //
+        // Create instance of client SSE channel for this connection
+        web_server.client = new sse_client();
+        //
+        var intervalId = setInterval(function () {
+          n ++;
+          d = new Date();
+          //
+          // Write some data to the client
+          //
+          web_server.write('data: SSE data line ' + n + ' Date: ' + d.toLocaleString() + '\r\n\r\n');
+          //
+          // Close channel after 10 data items have been dispatched
+          //
+          if (n > 9) {
+            clearInterval(intervalId);
+            web_server.close();
+          }
+        }, 5000);
+        return result;
+      }
+
 ## <a name="wscode">WebSocket code</a>
 
 The handler function in the WebSocket application takes the following form:
@@ -310,7 +358,7 @@ This simple example echoes back data received from the client with the date and 
 
 ## <a name="license">License</a>
 
-Copyright (c) 2019-2024 MGateway Ltd,
+Copyright (c) 2019-2025 MGateway Ltd,
 Surrey UK.                                                      
 All rights reserved.
 
@@ -337,3 +385,8 @@ Unless required by applicable law or agreed to in writing, software distributed 
 ### v1.1.2 (10 June 2024)
 
 * Introduce support for Server-Sent Events (SSE).
+
+### v1.1.3 (13 March 2025)
+
+* Detect (and allow the applicatoin to respond to) the 'client aborted' scenario for SSE channels.
+  * This enhancement requires **mg\_web** version 2.8.41 (or later).
