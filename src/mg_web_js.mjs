@@ -5,7 +5,7 @@
 //   | Description: JavaScript server for mg_web                                |
 //   | Author:      Chris Munt cmunt@mgateway.com                               |
 //   |                         chris.e.munt@gmail.com                           |
-//   | Copyright(c) 2023 - 2024 MGateway Ltd                                    |
+//   | Copyright(c) 2023 - 2025 MGateway Ltd                                    |
 //   | Surrey UK.                                                               |
 //   | All rights reserved.                                                     |
 //   |                                                                          |
@@ -35,7 +35,7 @@ const cpus = os.cpus().length;
 
 const MGWEB_VERSION_MAJOR = 1;
 const MGWEB_VERSION_MINOR = 1;
-const MGWEB_VERSION_BUILD = 2;
+const MGWEB_VERSION_BUILD = 3;
 
 function mg_web(options) {
 

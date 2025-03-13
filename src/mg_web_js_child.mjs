@@ -5,7 +5,7 @@
 //   | Description: JavaScript server for mg_web                                |
 //   | Author:      Chris Munt cmunt@mgateway.com                               |
 //   |                         chris.e.munt@gmail.com                           |
-//   | Copyright(c) 2023 - 2024 MGateway Ltd                                    |
+//   | Copyright(c) 2023 - 2025 MGateway Ltd                                    |
 //   | Surrey UK.                                                               |
 //   | All rights reserved.                                                     |
 //   |                                                                          |
@@ -92,6 +92,7 @@ class webserver {
     this.stream_mode = options.stream_mode || 0;
     this.conn = false;
     this.sse = false;
+    this.client = false;
   }
 
   stream(sys, binary, options) {
@@ -206,7 +207,6 @@ process.on('message', (dbx, conn) => {
   conn.write(wsrv.buffer.slice(0, offset));
 
   conn.on('data', async (data) => {
-    wsrv.sse = false;
     let offset = 0;
     let request_no = 0;
     let cgi = new Map();
@@ -304,10 +304,16 @@ process.on('message', (dbx, conn) => {
         break;
       }
     }
+
     // websocket client data
     if (ws.websocket_connection === true) {
       // callout to application read method
       ws.client.read(ws, data);
+    }
+    // SSE client aborted message
+    else if (wsrv.sse === true && wsrv.client != false) {
+      // callout to application closed method
+       wsrv.client.closed(wsrv, data);
     }
     // websocket initialization
     else if (wsfun != "") {
