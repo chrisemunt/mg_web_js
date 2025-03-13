@@ -241,10 +241,11 @@ Example:
       // Define a class to represent a SSE channel
       //
       class sse_client {
-        // Mandatory 'closed' method to signify that client has disconnected from the SSE channel 
+        // Mandatory 'closed' method to signify that client has disconnected
+        // from the SSE channel 
         closed(web_server, data) {
           // Opportunity to clean-up server side of SSE channel before closing
-          //console.log('Client aborted SSE channel');
+          // console.log('Client aborted SSE channel');
           web_server.close();
         }
       }
