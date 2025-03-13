@@ -40,10 +40,24 @@ let handler = function(web_server, cgi, content, sys) {
 
   //let res = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nConnection: close\r\n\r\nIt Works!\r\n";
 
+   // Define a class to represent a SSE channel
+   class sse_client {
+
+      // Mandatory 'closed' method to signify that client has disconnected from the SSE channel 
+      closed(web_server, data) {
+         // Opportunity to clean-up server side of SSE channel before closing
+         console.log('Client aborted SSE channel');
+         web_server.close();
+      }
+   }
+
   if (web_server.sse === true) {
     let res = web_server.initsse(sys, "");
     let n = 0;
     let d = 0;
+
+    // Create instance of client SSE channel for this connection
+    web_server.client = new sse_client();
     var intervalId = setInterval(function () {
       n++;
       d = new Date();
