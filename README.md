@@ -388,5 +388,5 @@ Unless required by applicable law or agreed to in writing, software distributed 
 
 ### v1.1.3 (13 March 2025)
 
-* Detect (and allow the applicatoin to respond to) the 'client aborted' scenario for SSE channels.
+* Detect (and allow the application to respond to) the 'client aborted' scenario for SSE channels.
   * This enhancement requires **mg\_web** version 2.8.41 (or later).
